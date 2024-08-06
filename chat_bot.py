@@ -1,4 +1,5 @@
 import pickle
+import difflib
 
 
 from class_store import AddressBook, Record
@@ -27,6 +28,24 @@ class ChatBot:
     """
     def __init__(self, filename="addressbook.pkl"):
         self.book = self.load_data(filename)
+        self.commands = [
+            'hello', 
+            'add', 
+            'change', 
+            'phone', 
+            'all', 
+            'add-birthday', 
+            'show-birthday', 
+            'birthdays', 
+            'delete', 
+            'remove-phone'
+            ]
+        
+    def find_closest_command(self, input_command):
+        closest_matches = difflib.get_close_matches(input_command, self.commands)
+        if closest_matches:
+            return closest_matches[0]
+        return None
 
     @staticmethod
     def input_error(handler):
@@ -157,6 +176,9 @@ class ChatBot:
         if command in command_dict:
             return command_dict[command](args)
         else:
+            closest_command = self.find_closest_command(command)
+            if closest_command:
+                return f"Did you mean '{closest_command}'? Please try again."
             return "Invalid command. Try again."
         
     def save_data(self, filename="addressbook.pkl"):
